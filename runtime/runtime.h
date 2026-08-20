@@ -43,4 +43,5 @@ void cb_val_as_string(cb_var_value val, char * strbuf);
 double cb_val_as_number(cb_var_value val);
 bool cb_val_as_boolean(cb_var_value val);
 
+extern cb_var_key *cb_variables;
 #endif
