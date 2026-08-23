@@ -8,26 +8,10 @@ void Compiler::push_header(std::vector<Literal> literals) {
     case Literal::Type::String:
       append_instructions(
           std::format("\n{}:", translate_string(lit.get_string())),
-          std::format("\t.byte {}, 0", escape_string(lit.get_string()))
-      );
+          std::format("\t.byte {}, 0", escape_string(lit.get_string())));
       break;
     }
   }
-
-  std::vector<std::string> linkedFunctions = {
-      "cb_clear_variables",
-      "cb_variable_assign_null",
-      "cb_variable_assign_number",
-      "cb_variable_assign_boolean",
-      "cb_variable_assign_string",
-      "cb_eval_variable_true",
-      "cb_eval_variable_false",
-      "cb_eval_variable_eq",
-      "cb_eval_variable_gt",
-      "cb_eval_variable_lt",
-      "cb_eval_variable_ge",
-      "cb_eval_variable_le",
-  };
 
   for (auto func : linkedFunctions) {
     mInstructions.push_back(std::format(".extern {}", func));
@@ -41,17 +25,14 @@ void Compiler::line_num_header(int linenum) {
     append_instructions(
         (mCurSubroutine.has_value())
             ? std::format(
-                  "\n__ABASIC_SUB_{}_LINE_{}:", mCurSubroutine.value(), linenum
-              )
-            : std::format("\n__ABASIC_LINE_{}:", linenum)
-    );
+                  "\n__ABASIC_SUB_{}_LINE_{}:", mCurSubroutine.value(), linenum)
+            : std::format("\n__ABASIC_LINE_{}:", linenum));
   }
 };
 
 void Compiler::push_main_start() {
   append_instructions(
-      "\nmain:", "\tpush rbp", "\tmov rbp, rsp", "\tsub rsp, 32"
-  );
+      "\nmain:", "\tpush rbp", "\tmov rbp, rsp", "\tsub rsp, 32");
 }
 
 void Compiler::push_print(int linenum, std::string msg) {
@@ -62,8 +43,7 @@ void Compiler::push_print(int linenum, std::string msg) {
       "\tmov rdi, 1",                                              // stdout
       std::format("\tlea rsi, [rip + {}]", translate_string(msg)), // msg
       std::format("\tmov rdx, {}", msg.length()),                  // len
-      "\tsyscall"
-  );
+      "\tsyscall");
 };
 
 void Compiler::push_goto(int linenum, int gotonum) {
@@ -74,12 +54,10 @@ void Compiler::push_goto(int linenum, int gotonum) {
 
 void Compiler::push_subroutine_def(std::string def) {
   mCurSubroutine = def;
-  append_instructions(
-      std::format("\n__ABASIC_SUB_{}:", def),
-      "\tpush rbp",
-      "\tmov rbp, rsp",
-      "\tsub rsp, 32"
-  );
+  append_instructions(std::format("\n__ABASIC_SUB_{}:", def),
+                      "\tpush rbp",
+                      "\tmov rbp, rsp",
+                      "\tsub rsp, 32");
 };
 void Compiler::push_subroutine_ret(std::string def) {
   mCurSubroutine = {};
@@ -93,11 +71,9 @@ void Compiler::push_goto_sub(int linenum, std::string sub) {
 };
 
 void Compiler::push_footer() {
-  append_instructions(
-      "\tmov rsp, rbp", //
-      "\tpop rbp",      //
-      "\tmov rax, 60",  // sys_exit
-      "\tmov rdi, 0",   // success
-      "\tsyscall"
-  );
+  append_instructions("\tmov rsp, rbp", //
+                      "\tpop rbp",      //
+                      "\tmov rax, 60",  // sys_exit
+                      "\tmov rdi, 0",   // success
+                      "\tsyscall");
 }

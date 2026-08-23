@@ -33,10 +33,9 @@ class Compiler {
 
   int mDummyCounter = 0;
 
-  void push_bool_eval_goto_code(
-      std::string key, std::string key2, int gotonum, std::string def,
-      std::string cmpfunc, bool isgoto, bool issingular
-  );
+  void push_bool_eval_goto_code(std::string key, std::string key2, int gotonum,
+                                std::string def, std::string cmpfunc,
+                                bool isgoto, bool issingular);
 
 public:
   void push_header(std::vector<Literal> literals);
@@ -58,62 +57,63 @@ public:
 
   void push_bool_eval_goto_if_true(int linenum, std::string key, int gotonum);
   void push_bool_eval_goto_if_false(int linenum, std::string key, int gotonum);
-  void push_bool_eval_goto_sub_if_true(
-      int linenum, std::string key, std::string def
-  );
-  void push_bool_eval_goto_sub_if_false(
-      int linenum, std::string key, std::string def
-  );
-  void push_bool_eval_goto_if_eq(
-      int linenum, std::string key, std::string key2, int gotonum
-  );
-  void push_bool_eval_goto_sub_if_eq(
-      int linenum, std::string key, std::string key2, std::string def
-  );
-  void push_bool_eval_goto_if_gt(
-      int linenum, std::string key, std::string key2, int gotonum
-  );
-  void push_bool_eval_goto_sub_if_gt(
-      int linenum, std::string key, std::string key2, std::string def
-  );
-  void push_bool_eval_goto_if_lt(
-      int linenum, std::string key, std::string key2, int gotonum
-  );
-  void push_bool_eval_goto_sub_if_lt(
-      int linenum, std::string key, std::string key2, std::string def
-  );
-  void push_bool_eval_goto_if_ge(
-      int linenum, std::string key, std::string key2, int gotonum
-  );
-  void push_bool_eval_goto_sub_if_ge(
-      int linenum, std::string key, std::string key2, std::string def
-  );
-  void push_bool_eval_goto_if_le(
-      int linenum, std::string key, std::string key2, int gotonum
-  );
-  void push_bool_eval_goto_sub_if_le(
-      int linenum, std::string key, std::string key2, std::string def
-  );
+  void push_bool_eval_goto_sub_if_true(int linenum, std::string key,
+                                       std::string def);
+  void push_bool_eval_goto_sub_if_false(int linenum, std::string key,
+                                        std::string def);
+  void push_bool_eval_goto_if_eq(int linenum, std::string key, std::string key2,
+                                 int gotonum);
+  void push_bool_eval_goto_sub_if_eq(int linenum, std::string key,
+                                     std::string key2, std::string def);
+  void push_bool_eval_goto_if_gt(int linenum, std::string key, std::string key2,
+                                 int gotonum);
+  void push_bool_eval_goto_sub_if_gt(int linenum, std::string key,
+                                     std::string key2, std::string def);
+  void push_bool_eval_goto_if_lt(int linenum, std::string key, std::string key2,
+                                 int gotonum);
+  void push_bool_eval_goto_sub_if_lt(int linenum, std::string key,
+                                     std::string key2, std::string def);
+  void push_bool_eval_goto_if_ge(int linenum, std::string key, std::string key2,
+                                 int gotonum);
+  void push_bool_eval_goto_sub_if_ge(int linenum, std::string key,
+                                     std::string key2, std::string def);
+  void push_bool_eval_goto_if_le(int linenum, std::string key, std::string key2,
+                                 int gotonum);
+  void push_bool_eval_goto_sub_if_le(int linenum, std::string key,
+                                     std::string key2, std::string def);
 
   void push_footer();
 
   void exec(const char *__file, char *const __argv[]);
 
+  const std::vector<std::string> linkedFunctions = {
+      "cb_clear_variables",
+      "cb_variable_assign_null",
+      "cb_variable_assign_number",
+      "cb_variable_assign_boolean",
+      "cb_variable_assign_string",
+      "cb_eval_variable_true",
+      "cb_eval_variable_false",
+      "cb_eval_variable_eq",
+      "cb_eval_variable_gt",
+      "cb_eval_variable_lt",
+      "cb_eval_variable_ge",
+      "cb_eval_variable_le",
+  };
+
   void print() { exec("cat", NULL); };
   void assemble() {
-    const char *args[] = {
-        "clang",
-        "-g",
-        "-x",
-        "assembler",
-        "-",
-        "-masm=intel",
-        "-L./runtime",
-        "-lcbruntime",
-        "-o",
-        "a.out",
-        NULL
-    };
+    const char *args[] = {"clang",
+                          "-g",
+                          "-x",
+                          "assembler",
+                          "-",
+                          "-masm=intel",
+                          "-L./runtime",
+                          "-lcbruntime",
+                          "-o",
+                          "a.out",
+                          NULL};
     exec("clang", (char **)args);
   };
 
