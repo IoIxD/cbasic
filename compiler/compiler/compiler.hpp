@@ -6,32 +6,35 @@
 
 class Literal {
 public:
-  enum class Type { String };
+  enum class Type { String, Array };
 
 private:
   union {
     std::string *str;
+    size_t arr;
   } mInner;
   Type mType;
 
 public:
   Literal(std::string st)
       : mInner({.str = new std::string(st)}), mType(Type::String) {};
+  Literal(size_t st) : mInner({.arr = st}), mType(Type::Array) {};
 
   std::string get_string() { return *mInner.str; }
+  size_t get_arr() { return mInner.arr; }
+
   Type type() { return mType; }
 };
 
 class Compiler {
   std::vector<std::string> mInstructions;
   std::optional<std::string> mCurSubroutine;
+  int mDummyCounter = 0;
 
   std::string translate_string(std::string str);
   std::string escape_string(std::string str);
 
   void line_num_header(int linenum);
-
-  int mDummyCounter = 0;
 
   void push_bool_eval_goto_code(std::string key, std::string key2, int gotonum,
                                 std::string def, std::string cmpfunc,
@@ -39,21 +42,25 @@ class Compiler {
 
 public:
   void push_header(std::vector<Literal> literals);
-
   void push_main_start();
+  void push_footer();
 
-  void push_print(int linenum, std::string msg);
-  void push_goto(int linenum, int gotonum);
+  /* functions */
 
   void push_subroutine_def(std::string def);
   void push_subroutine_ret(std::string def);
+  void push_goto(int linenum, int gotonum);
   void push_goto_sub(int linenum, std::string sub);
+
+  /* variables */
 
   void push_clear(int linenum);
   void push_assign_null(int linenum, std::string key);
   void push_assign_number(int linenum, std::string key, double number);
   void push_assign_boolean(int linenum, std::string key, bool boolean);
   void push_assign_string(int linenum, std::string key, std::string str);
+
+  /* comparisons */
 
   void push_bool_eval_goto_if_true(int linenum, std::string key, int gotonum);
   void push_bool_eval_goto_if_false(int linenum, std::string key, int gotonum);
@@ -82,7 +89,9 @@ public:
   void push_bool_eval_goto_sub_if_le(int linenum, std::string key,
                                      std::string key2, std::string def);
 
-  void push_footer();
+  /* other */
+
+  void push_print(int linenum, std::string msg);
 
   void exec(const char *__file, char *const __argv[]);
 
