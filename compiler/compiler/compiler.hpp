@@ -1,7 +1,15 @@
 #pragma once
 
+#include <llvm/ExecutionEngine/ExecutionEngine.h>
+#include <llvm/ExecutionEngine/GenericValue.h>
+#include <llvm/IR/BasicBlock.h>
+#include <llvm/IR/Function.h>
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/IR/LLVMContext.h>
+#include <memory>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 class Literal {
@@ -27,23 +35,32 @@ public:
 };
 
 class Compiler {
-  std::vector<std::string> mInstructions;
-  std::optional<std::string> mCurSubroutine;
+  std::unique_ptr<llvm::LLVMContext> mLLVM;
+  std::unique_ptr<llvm::IRBuilder<>> mIRBuilder;
+  std::unique_ptr<llvm::Module> mModule;
+
+  std::unordered_map<std::string, llvm::Function *> mFunctions;
+  std::unordered_map<std::string, llvm::BasicBlock *> mLabels;
+
+  std::optional<std::string> mCurSubroutine = {};
+  llvm::BasicBlock *mCurInsertPoint = nullptr;
+  llvm::Function *mCurFunction = nullptr;
+
   int mDummyCounter = 0;
 
-  std::string translate_string(std::string str);
-  std::string escape_string(std::string str);
-
+  std::string label_name(int linenum);
   void line_num_header(int linenum);
+  void line_num_footer(int linenum);
 
   void push_bool_eval_goto_code(std::string key, std::string key2, int gotonum,
                                 std::string def, std::string cmpfunc,
                                 bool isgoto, bool issingular);
 
 public:
-  void push_header(std::vector<Literal> literals);
+  Compiler();
+
   void push_main_start();
-  void push_footer();
+  void push_main_end();
 
   /* functions */
 
@@ -93,8 +110,6 @@ public:
 
   void push_print(int linenum, std::string msg);
 
-  void exec(const char *__file, char *const __argv[]);
-
   const std::vector<std::string> linkedFunctions = {
       "cb_clear_variables",
       "cb_variable_assign_null",
@@ -110,23 +125,9 @@ public:
       "cb_eval_variable_le",
   };
 
-  void print() { exec("cat", NULL); };
-  void assemble() {
-    const char *args[] = {"clang",
-                          "-g",
-                          "-x",
-                          "assembler",
-                          "-",
-                          "-masm=intel",
-                          "-L./runtime",
-                          "-lcbruntime",
-                          "-o",
-                          "a.out",
-                          NULL};
-    exec("clang", (char **)args);
-  };
+  void finish();
 
-  template <typename... Args> void append_instructions(Args &&...args) {
-    (mInstructions.push_back(std::forward<Args>(args)), ...);
-  }
+  // template <typename... Args> void append_instructions(Args &&...args) {
+  // (mInstructions.push_back(std::forward<Args>(args)), ...);
+  // }
 };
