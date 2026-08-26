@@ -1,5 +1,5 @@
-#ifndef __CB_RUNTIME_H__
-#define __CB_RUNTIME_H__
+#ifndef __CB_core_H__
+#define __CB_core_H__
 
 #include <stdbool.h>
 #include <stddef.h>

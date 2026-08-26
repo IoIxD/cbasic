@@ -1,7 +1,7 @@
-project(cbruntime)
+project(cbcore)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 FILE(GLOB_RECURSE sources *.c)
 
-add_library(cbruntime STATIC ${sources})
+add_library(cbcore STATIC ${sources})

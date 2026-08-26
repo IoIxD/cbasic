@@ -1,4 +1,4 @@
-#include "runtime.h"
+#include "cb_core.h"
 #include "stb_ds.h"
 
 bool cb_eval_variable_eq(const char *key, const char *key2) {

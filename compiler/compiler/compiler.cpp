@@ -97,8 +97,7 @@ void Compiler::finish() {
   llvm::raw_string_ostream outBuf(v);
   mModule->print(outBuf, nullptr);
 
-  const char *args[] = {
-      "clang", "-x", "ir", "-", "-Lruntime", "-lcbruntime", NULL};
+  const char *args[] = {"clang", "-x", "ir", "-", "-Lcore", "-lcbcore", NULL};
   exec(v, "clang", (char **)args);
 
   // llvm::InitializeAllTargetInfos();
